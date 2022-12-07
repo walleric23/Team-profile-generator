@@ -1,7 +1,10 @@
+const fs = require("fs");
 const inquirer = require("inquirer");
 const Engineer = require("./lib/Engineer");
 const Manager = require("./lib/manager");
+const Intern = require("./lib/Intern");
 const team = [];
+// prompt of questions for manager
 inquirer
   .prompt([
     {
@@ -25,12 +28,14 @@ inquirer
       name: "officeNumber",
     },
   ])
+  // pushes user input in team array
   .then((res) => {
     const manager = new Manager(res.Name, res.email, res.ID, res.officeNumber);
     team.push(manager);
     menu();
   });
 function menu() {
+  // asks user what they would like to do after creating manager
   inquirer
     .prompt({
       type: "list",
@@ -44,9 +49,11 @@ function menu() {
       } else if (res.action === "add engineer") {
         addEngineer();
       } else {
+        buildTeam();
       }
     });
 }
+// if user chooses to add engineer they are prompted with these questions
 function addEngineer() {
   inquirer
     .prompt([
@@ -71,12 +78,14 @@ function addEngineer() {
         name: "github",
       },
     ])
+    // user input pushed into team array
     .then((res) => {
       const engineer = new Engineer(res.Name, res.email, res.ID, res.github);
       team.push(engineer);
       menu();
     });
 }
+// if user adds an intern they are prompted with these questions
 function addIntern() {
   inquirer
     .prompt([
@@ -100,6 +109,7 @@ function addIntern() {
         message: "what is the interns school?",
         name: "school",
       },
+      // user input is pushed into team array
     ])
     .then((res) => {
       const intern = new Intern(res.Name, res.email, res.ID, res.school);
@@ -107,9 +117,17 @@ function addIntern() {
       menu();
     });
 }
+
 function buildTeam() {
-  let employeeHTML = "";
-  //   make a 4 loop that loops over team array and adds to HTML string and adds using userinput
+  let employeeHTML = team
+    .map((member) => {
+      return `<div><div>${member.name}</div>
+      <div>${member.email}</div>
+      <div>
+      </div>`;
+    })
+    .join("\n");
+
   let HTML = `<!DOCTYPE html>
   <html lang="en">
     <head>
@@ -125,4 +143,6 @@ function buildTeam() {
   fs.writeFile("./dist/index.html", HTML, (err) => {
     console.log("Team Generated");
   });
+  console.log(HTML);
+  console.log(team);
 }
